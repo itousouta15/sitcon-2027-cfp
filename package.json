@@ -1,0 +1,11 @@
+{
+  "name": "2027-cfp",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "packageManager": "pnpm@10.20.0",
+  "scripts": {
+    "check": "node --check scripts/build.js",
+    "build": "node scripts/build.js"
+  }
+}
