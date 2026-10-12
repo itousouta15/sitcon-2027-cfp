@@ -1,0 +1,163 @@
+import type { ComponentProps, ReactNode } from 'react'
+import { Link } from '@tanstack/react-router'
+import {
+  siFacebook,
+  siFlickr,
+  siInstagram,
+  siTelegram,
+  siYoutube,
+} from 'simple-icons'
+
+import content from '@/content.json'
+import sitconLogo from '@/assets/sitcon-logo-full.svg'
+import { PhotoCredits } from '@/components/photo-credits'
+import { buttonVariants } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import { useSubmissionClosed } from '@/lib/countdown'
+import { links } from '@/lib/links'
+import { cn } from '@/lib/utils'
+
+const submitLinks = [
+  { type: 'general', label: content.site_footer.submitGeneral },
+  { type: 'open', label: content.site_footer.submitOpen },
+  { type: 'demo', label: content.site_footer.submitDemo },
+] as const
+
+const pastYears = content.site_footer.pastYears
+
+const socials = [
+  {
+    name: content.social.facebook,
+    href: links.social.facebook,
+    icon: siFacebook,
+  },
+  {
+    name: content.social.instagram,
+    href: links.social.instagram,
+    icon: siInstagram,
+  },
+  {
+    name: content.social.telegram,
+    href: links.social.telegram,
+    icon: siTelegram,
+  },
+  { name: content.social.flickr, href: links.social.flickr, icon: siFlickr },
+  {
+    name: content.social.youtube,
+    href: links.social.youtube,
+    icon: siYoutube,
+  },
+]
+
+export function SiteFooter() {
+  const submissionClosed = useSubmissionClosed()
+  return (
+    <footer className="border-t border-gray bg-foreground px-2.5 py-16.25 text-background">
+      <div className="mx-auto flex max-w-content flex-col gap-10">
+        <div className="grid grid-cols-2 gap-10 md:grid-cols-4 md:gap-0">
+          <FooterColumn title={content.site_footer.linksTitle}>
+            <Link to="/" className={footerLinkClassName}>
+              {content.site_footer.home}
+            </Link>
+            {submitLinks.map(({ type, label }) =>
+              // Once submissions close, the forms are gone: keep the labels
+              // as plain, dimmed text rather than dead links.
+              submissionClosed ? (
+                <span key={type} className="self-start text-body opacity-50">
+                  {label}
+                </span>
+              ) : (
+                <Link
+                  key={type}
+                  to="/submit/$type"
+                  params={{ type }}
+                  className={footerLinkClassName}
+                >
+                  {label}
+                </Link>
+              ),
+            )}
+            <PhotoCredits />
+          </FooterColumn>
+          <FooterColumn title={content.site_footer.supportTitle}>
+            <Link to="/" hash="sponsor" className={footerLinkClassName}>
+              {content.site_footer.sponsor}
+            </Link>
+          </FooterColumn>
+          <FooterColumn title={content.site_footer.pastSitesTitle}>
+            <ul className="flex flex-wrap gap-x-5.5 gap-y-1.5">
+              {pastYears.map((year) => (
+                <li key={year} className="w-12.25">
+                  <FooterLink href={links.pastSite(year)}>{year}</FooterLink>
+                </li>
+              ))}
+            </ul>
+          </FooterColumn>
+          <FooterColumn title={content.site_footer.contactTitle}>
+            <FooterLink href={links.contactEmail}>
+              {content.site_footer.email}
+            </FooterLink>
+          </FooterColumn>
+        </div>
+
+        <Separator className="bg-background" />
+
+        <div className="flex flex-wrap items-center justify-between gap-5">
+          <div className="flex items-center gap-5.75">
+            <img src={sitconLogo} alt={content.site_footer.logoAlt} />
+            <p className="w-66.25 text-caption">
+              {content.site_footer.nameZh}
+              <br />
+              {content.site_footer.nameEn}
+            </p>
+          </div>
+          <ul className="flex gap-5">
+            {socials.map(({ name, href, icon }) => (
+              <li key={name}>
+                <a
+                  href={href}
+                  aria-label={name}
+                  className={buttonVariants({
+                    variant: 'outline',
+                    size: 'icon',
+                  })}
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    className="size-6 fill-current"
+                  >
+                    <path d={icon.path} />
+                  </svg>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
+function FooterColumn({
+  title,
+  children,
+}: {
+  title: string
+  children: ReactNode
+}) {
+  return (
+    <div className="flex flex-col gap-2.5">
+      <h2 className="text-subheading font-bold">{title}</h2>
+      {children}
+    </div>
+  )
+}
+
+const footerLinkClassName =
+  'self-start rounded-xs text-body hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue'
+
+/** Outbound links. Pages on this site use `<Link>` with `footerLinkClassName`. */
+function FooterLink({ className, ...props }: ComponentProps<'a'>) {
+  return <a className={cn(footerLinkClassName, className)} {...props} />
+}

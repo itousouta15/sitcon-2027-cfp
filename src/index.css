@@ -1,0 +1,209 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+
+/*
+ * Design tokens — source: Figma "SITCON 2027 CFP 網站".
+ * Tailwind's default colors, type scale and radii are reset so only these
+ * tokens exist. See AGENTS.md before adding or changing anything here.
+ *
+ * Figma is drawn at 1280px with oversized type, so sizes here are NOT the
+ * Figma values: they are scaled down (roughly ×0.75, small text kept legible)
+ * and shrink again on mobile below. AGENTS.md has the Figma → token table.
+ */
+@theme {
+  --color-*: initial;
+  --color-background: #101312;
+  --color-foreground: #f9f5ef;
+  --color-gray: #2b2b2b;
+  --color-light: #e3e0dc;
+  --color-red: #ff625b;
+  --color-blue: #6a74e3;
+  --color-green: #8df280;
+  --color-yellow: #fcbf30;
+  --color-black: #000000;
+
+  --font-sans: 'LINESeedTW', 'Inter Variable', sans-serif;
+  --font-numeric: 'Inter Variable', sans-serif;
+
+  --text-*: initial;
+  /* Homepage hero title (mega), 甚麼是 SITCON ? headline and stats. Not
+     in Figma: sized past the type scale on purpose for impact. */
+  --text-mega: 8.5rem; /* 136px */
+  --text-mega--line-height: 1.05;
+  --text-headline: 6rem; /* 96px */
+  --text-headline--line-height: 1.1;
+  --text-stat: 6rem; /* 96px */
+  --text-stat--line-height: 1;
+  --text-display: 3.75rem; /* 60px */
+  --text-display--line-height: 1.25;
+  --text-h1: 2.25rem; /* 36px */
+  --text-h1--line-height: 1;
+  --text-eyebrow: 1.875rem; /* 30px */
+  --text-eyebrow--line-height: 1;
+  --text-h2: 1.75rem; /* 28px */
+  --text-h2--line-height: 1.1;
+  --text-h3: 1.5rem; /* 24px */
+  --text-h3--line-height: 1.5;
+  --text-lead: 1.25rem; /* 20px */
+  --text-lead--line-height: normal;
+  --text-paragraph: 1.125rem; /* 18px */
+  --text-paragraph--line-height: 2;
+  --text-subheading: 1.125rem; /* 18px */
+  --text-subheading--line-height: 1.5;
+  --text-subheading--letter-spacing: 0.015em;
+  --text-body: 1rem; /* 16px */
+  --text-body--line-height: 1.5;
+  --text-body--letter-spacing: 0.015em;
+  --text-caption: 0.75rem; /* 12px */
+  --text-caption--line-height: 1.5;
+
+  --radius-*: initial;
+  --radius-xs: 0.25rem; /* 4px */
+  --radius-sm: 0.625rem; /* 10px */
+  --radius-md: 1.375rem; /* 22px */
+  --radius-lg: 1.875rem; /* 30px */
+  --radius-xl: 2.25rem; /* 36px */
+
+  /*
+   * Spacing scale base: p-5 = 5 × this. Classes are still written from the
+   * Figma px ÷ 4 (Figma 20px → p-5); this 3px base renders them at ×0.75.
+   */
+  --spacing: 0.1875rem;
+  /* Interactive control sizes (h-control, h-control-lg, size-control-icon). */
+  --spacing-control: 2.75rem; /* 44px */
+  --spacing-control-lg: 4rem; /* 64px */
+  --spacing-control-icon: 2.25rem; /* 36px */
+  /*
+   * Height of the site header that overlays the top of every page
+   * (pt-header): the navbar's pt-7.5 + pb-2.5 around its h-control-lg.
+   */
+  --spacing-header: calc(var(--spacing) * 10 + var(--spacing-control-lg));
+
+  --container-content: 60.625rem; /* 970px */
+
+  /* Long ease-out (easeOutQuint) for fades that should settle gently. */
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Homepage photo wall: slow, so people have time to spot faces. Its
+     content is doubled, so -50% loops it. */
+  --animate-photo-wall: marquee 140s linear infinite;
+  /* Early Bird band on session pages; also doubled. */
+  --animate-early-bird: marquee 30s linear infinite;
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+/*
+ * Mobile overrides. Utilities read the variables at runtime, so redefining
+ * them here resizes every component below `md` without touching markup.
+ */
+@media (width < 48rem) {
+  :root {
+    --text-mega: 3.25rem; /* 52px */
+    --text-headline: 2.5rem; /* 40px */
+    --text-stat: 3.5rem; /* 56px */
+    --text-display: 2.5rem; /* 40px */
+    --text-h1: 1.75rem; /* 28px */
+    --text-eyebrow: 1.375rem; /* 22px */
+    --text-h2: 1.375rem; /* 22px */
+    --text-h3: 1.25rem; /* 20px */
+    --text-lead: 1.125rem; /* 18px */
+    --text-paragraph: 1rem; /* 16px */
+    --text-paragraph--line-height: 1.75;
+    --text-subheading: 1rem; /* 16px */
+    --text-body: 0.875rem; /* 14px */
+
+    --radius-sm: 0.5rem; /* 8px */
+    --radius-md: 1.125rem; /* 18px */
+    --radius-lg: 1.5rem; /* 24px */
+    --radius-xl: 1.75rem; /* 28px */
+
+    --spacing-control: 2.5rem; /* 40px */
+    --spacing-control-lg: 3.25rem; /* 52px */
+  }
+}
+
+/*
+ * Fades an element to transparent at its top and bottom edges with an eased
+ * curve, so full-bleed photos melt into the page without a visible seam.
+ */
+@utility mask-fade-y {
+  --fade: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgb(0 0 0 / 0.05) 6%,
+    rgb(0 0 0 / 0.2) 12%,
+    rgb(0 0 0 / 0.45) 19%,
+    rgb(0 0 0 / 0.7) 26%,
+    rgb(0 0 0 / 0.9) 33%,
+    black 40%,
+    black 60%,
+    rgb(0 0 0 / 0.9) 67%,
+    rgb(0 0 0 / 0.7) 74%,
+    rgb(0 0 0 / 0.45) 81%,
+    rgb(0 0 0 / 0.2) 88%,
+    rgb(0 0 0 / 0.05) 94%,
+    transparent 100%
+  );
+  mask-image: var(--fade);
+}
+
+/*
+ * The bottom half of mask-fade-y: solid at the top, then an eased fade to
+ * transparent, so the photo wall dissolves into the backdrop beneath it.
+ */
+@utility mask-fade-b {
+  --fade: linear-gradient(
+    to bottom,
+    black 45%,
+    rgb(0 0 0 / 0.95) 52%,
+    rgb(0 0 0 / 0.85) 59%,
+    rgb(0 0 0 / 0.7) 66%,
+    rgb(0 0 0 / 0.5) 73%,
+    rgb(0 0 0 / 0.3) 80%,
+    rgb(0 0 0 / 0.15) 87%,
+    rgb(0 0 0 / 0.05) 94%,
+    transparent 100%
+  );
+  mask-image: var(--fade);
+}
+
+/*
+ * Homepage photo wall spotlight. Script sets the hovered photo's box on
+ * the layer: --spotlight-left / -top / -width / -height.
+ *
+ * spotlight-shade dims the wall everywhere but that box. It is a rounded
+ * box --spotlight-reach larger than the photo on every side: a huge outer
+ * shadow darkens everything beyond it, and an inset shadow blurs from
+ * full dark at its edge to clear at the photo's. A blur is a true
+ * Gaussian, so the falloff has no bands or edges; the reach is two blur
+ * radii, putting both ends of the curve within ~2% of dark and clear.
+ */
+@utility spotlight-shade {
+  --spotlight-blur: --spacing(20);
+  --spotlight-reach: calc(var(--spotlight-blur) * 2);
+  --spotlight-color: color-mix(
+    in srgb,
+    var(--color-background) 70%,
+    transparent
+  );
+  position: absolute;
+  top: calc(var(--spotlight-top) - var(--spotlight-reach));
+  left: calc(var(--spotlight-left) - var(--spotlight-reach));
+  width: calc(var(--spotlight-width) + var(--spotlight-reach) * 2);
+  height: calc(var(--spotlight-height) + var(--spotlight-reach) * 2);
+  border-radius: calc(var(--radius-sm) + var(--spotlight-reach));
+  box-shadow:
+    0 0 0 100vmax var(--spotlight-color),
+    inset 0 0 var(--spotlight-blur) var(--spotlight-blur) var(--spotlight-color);
+}
+
+@layer base {
+  html {
+    @apply scroll-pt-header bg-background font-sans text-foreground antialiased;
+  }
+}
