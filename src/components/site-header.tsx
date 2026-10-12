@@ -71,9 +71,7 @@ export function SiteHeader({ className }: { className?: string }) {
                   {sessionTypes.map(({ id, title }) => (
                     <NavigationMenuLink
                       key={id}
-                      render={
-                        <Link to="/sessions/$type" params={{ type: id }} />
-                      }
+                      render={<Link to="/$type" params={{ type: id }} />}
                     >
                       {title}
                     </NavigationMenuLink>
@@ -107,7 +105,7 @@ export function SiteHeader({ className }: { className?: string }) {
           ) : (
             <Link
               to="/submit/$type"
-              params={{ type: 'general' }}
+              params={{ type: 'normal' }}
               className={buttonVariants({
                 variant: 'cream',
                 shape: 'pill',
@@ -139,17 +137,17 @@ export function SiteHeader({ className }: { className?: string }) {
                   {(
                     [
                       {
-                        to: '/sessions/$type',
-                        params: { type: 'general' },
+                        to: '/$type',
+                        params: { type: 'normal' },
                         label: content.sessions.generalTitle,
                       },
                       {
-                        to: '/sessions/$type',
-                        params: { type: 'open' },
+                        to: '/$type',
+                        params: { type: 'undefined' },
                         label: content.sessions.openTitle,
                       },
                       {
-                        to: '/sessions/$type',
+                        to: '/$type',
                         params: { type: 'demo' },
                         label: content.sessions.demoTitle,
                       },
@@ -189,7 +187,7 @@ export function SiteHeader({ className }: { className?: string }) {
                 ) : (
                   <Link
                     to="/submit/$type"
-                    params={{ type: 'general' }}
+                    params={{ type: 'normal' }}
                     onClick={() => setMobileOpen(false)}
                     className={buttonVariants({
                       variant: 'cream',

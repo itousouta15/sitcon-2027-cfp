@@ -119,6 +119,13 @@ mapping is in `src/lib/session-quiz.ts`.
   route through `<Link>` (or a primitive's `render={<Link … />}`) and import
   assets, so the base path is applied. A new route must also be added to
   `routeShells` in `vite.config.ts`, or direct visits to it 404 in production.
+- The session type ids are `normal` (一般議程), `undefined` (開放議程) and
+  `demo` (`src/lib/session-type-ids.ts`), and each is also its pages' path:
+  `/normal` (`src/routes/$type.tsx`) and `/submit/normal`. The ids before
+  #53 (`general`, `open`) live on in `previousSessionTypeIds`: their old
+  paths (`/sessions/general`, `/submit/general?edit=…` in emails already
+  sent) redirect, saved drafts move over, and 投稿編號 keeps the `G` / `O`
+  letters.
 - In-page jumps to a section use `<Link to="/" hash="attend">`, never a raw
   `<a href="#attend">`. The router smooth-scrolls hash links
   (`defaultHashScrollIntoView` in `src/main.tsx`, instant under
@@ -376,7 +383,7 @@ devices get the plain wall.
 
 ### Session examples
 
-The 投稿主題範例 section on `/sessions/$type` reads its cards from
+The 投稿主題範例 section on the session pages reads its cards from
 `content.session_page.examples.<type>`: either `items` (one carousel) or
 `groups`, each a `title` with its own `items` (一般議程's Presentation and
 Espresso). Each card has `title`, `href` and `image`, a file name in
@@ -394,7 +401,7 @@ design for them. There are none at the moment.
 
 ### Demo posters
 
-The 歷年海報展示 strip on `/sessions/demo` shows every image in
+The 歷年海報展示 strip on `/demo` shows every image in
 `src/assets/demo-posters/`, newest file name first (`2026-1.webp` before
 `2025-1.webp`). They are past posters from the 2026 and 2025 sites
 (`sitcon-tw/2026` `public/img/poster/`, `sitcon-tw/2025` `public/poster/`),
