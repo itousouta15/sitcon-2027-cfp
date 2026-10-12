@@ -371,7 +371,10 @@ The 投稿主題範例 section on `/sessions/$type` reads its cards from
 `groups`, each a `title` with its own `items` (一般議程's Presentation and
 Espresso). Each card has `title`, `href` and `image`, a file name in
 `src/assets/session-examples/`. An empty `items` list shows the 範例整理中
-message.
+message. The carousel is a scroll-snap row (wheel, trackpad and touch
+scroll it a page at a time), and it turns the page every few seconds until
+someone scrolls or clicks it; it waits while hovered, focused or off screen,
+and never moves under `prefers-reduced-motion`.
 
 ### Placeholders
 
@@ -385,4 +388,7 @@ The 歷年海報展示 strip on `/sessions/demo` shows every image in
 `src/assets/demo-posters/`, newest file name first (`2026-1.webp` before
 `2025-1.webp`). They are past posters from the 2026 and 2025 sites
 (`sitcon-tw/2026` `public/img/poster/`, `sitcon-tw/2025` `public/poster/`),
-exported at 1000px tall.
+exported at 1000px tall. Clicking a poster opens it in a lightbox
+(`Dialog`) that steps through the others; its alt text is
+`demoPosters.poster`, filled with the year and number from the file name,
+so keep the `<year>-<n>` naming.
