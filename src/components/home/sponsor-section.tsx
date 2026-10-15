@@ -16,7 +16,7 @@ const actions = [
 ]
 
 /**
- * 想要支持？ — the cream section that closes the homepage. Says why SITCON
+ * 想要支持？ — the cream section near the foot of the homepage. Says why SITCON
  * needs support, then invites individuals and companies, linking the
  * donation page and the sponsorship prospectus like sitcon.org's 支持我們.
  */

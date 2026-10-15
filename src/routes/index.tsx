@@ -7,6 +7,7 @@ import { Hero } from '@/components/home/hero'
 import { SpeakerSection } from '@/components/home/speaker-section'
 import { SponsorSection } from '@/components/home/sponsor-section'
 import { SubmissionDeadline } from '@/components/home/submission-deadline'
+import { ThemeSection } from '@/components/home/theme-section'
 
 export const Route = createFileRoute('/')({
   component: Home,
@@ -24,6 +25,7 @@ function Home() {
         <SpeakerSection />
       </div>
       <SponsorSection />
+      <ThemeSection />
     </main>
   )
 }
