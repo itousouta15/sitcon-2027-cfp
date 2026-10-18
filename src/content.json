@@ -30,7 +30,10 @@
   },
   "hero": {
     "eventName": "SITCON 2027",
-    "title": "Call For Papers",
+    "title": {
+      "lead": "Call For",
+      "emphasis": "Papers"
+    },
     "date": "2027/03/13",
     "venue": "中央研究院人文社會科學館",
     "attend": "我要參加",
