@@ -72,11 +72,17 @@ export function SiteHeader({ className }: { className?: string }) {
           />
         </Link>
         <div className="flex items-center gap-2.5">
-          {/* Position the dropdown at the pill's bottom, rather than at the trigger's bottom. */}
+          {/*
+            Position the dropdown at the pill's bottom, rather than at the
+            trigger's bottom. NavbarGlass draws its surface as one shape with
+            the bar, so the popup drops its own.
+          */}
           <NavigationMenu
             positionMethod="fixed"
             positionerRef={dropdownPositioner}
             popupRef={dropdownPopup}
+            popupClassName="overflow-visible rounded-none bg-transparent backdrop-blur-none"
+            viewportClassName="rounded-b-xl"
             onValueChange={(value) => setDropdownOpen(value !== null)}
             sideOffset={() => {
               const pill = anchor.current

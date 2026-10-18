@@ -5,16 +5,19 @@ import type { ReactNode, RefObject } from 'react'
 import { cn, type WithClassName } from '@/lib/utils'
 
 /**
- * Root that also renders the shared popup. Its contents sit over the navbar's
- * single clipped glass surface, so the backdrop does not blur twice.
+ * Root that also renders the shared popup, a glass panel of its own. A caller
+ * that draws the surface itself (the site header's navbar glass) clears it
+ * with `popupClassName` and reads the popup's box through the refs.
  */
 export function NavigationMenu({
   className,
   children,
   positionMethod,
-  sideOffset,
+  sideOffset = 12,
   positionerRef,
   popupRef,
+  popupClassName,
+  viewportClassName,
   ...props
 }: WithClassName<BaseNavigationMenu.Root.Props> & {
   children?: ReactNode
@@ -22,6 +25,8 @@ export function NavigationMenu({
   sideOffset?: BaseNavigationMenu.Positioner.Props['sideOffset']
   positionerRef?: RefObject<HTMLDivElement | null>
   popupRef?: RefObject<HTMLDivElement | null>
+  popupClassName?: string
+  viewportClassName?: string
 }) {
   return (
     <BaseNavigationMenu.Root className={cn('relative', className)} {...props}>
@@ -36,9 +41,17 @@ export function NavigationMenu({
         >
           <BaseNavigationMenu.Popup
             ref={popupRef}
-            className="relative h-(--popup-height) w-(--popup-width) origin-top text-foreground transition-[opacity,scale,width,height] duration-500 ease-smooth data-ending-style:scale-x-75 data-ending-style:scale-y-0 data-ending-style:opacity-0 data-starting-style:scale-x-75 data-starting-style:scale-y-0 data-starting-style:opacity-0 motion-reduce:transition-none"
+            className={cn(
+              'relative h-(--popup-height) w-(--popup-width) origin-top overflow-clip rounded-sm bg-black/35 text-foreground backdrop-blur-lg transition-[opacity,scale,width,height] duration-500 ease-smooth data-ending-style:scale-x-75 data-ending-style:scale-y-0 data-ending-style:opacity-0 data-starting-style:scale-x-75 data-starting-style:scale-y-0 data-starting-style:opacity-0 motion-reduce:transition-none',
+              popupClassName,
+            )}
           >
-            <BaseNavigationMenu.Viewport className="relative size-full overflow-hidden rounded-b-xl" />
+            <BaseNavigationMenu.Viewport
+              className={cn(
+                'relative size-full overflow-hidden',
+                viewportClassName,
+              )}
+            />
           </BaseNavigationMenu.Popup>
         </BaseNavigationMenu.Positioner>
       </BaseNavigationMenu.Portal>

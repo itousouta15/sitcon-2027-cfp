@@ -23,15 +23,45 @@ type GlassSize = {
 
 const curve = 0.5522847498 // Cubic approximation of a quarter-circle.
 
+/**
+ * The positioner's left edge where Base UI is moving it. Its `left`/`right`
+ * are transitioned, so the box alone lags behind; the inline style holds the
+ * target and the computed style the value mid-transition.
+ */
+function targetLeft(positioner: HTMLElement) {
+  const box = positioner.getBoundingClientRect()
+  const current = getComputedStyle(positioner)
+  const { left, right } = positioner.style
+  if (left)
+    return box.left + Number.parseFloat(left) - Number.parseFloat(current.left)
+  if (right)
+    return (
+      box.left - Number.parseFloat(right) + Number.parseFloat(current.right)
+    )
+  return box.left
+}
+
 /** A single clipped backdrop keeps reflections continuous across the bar and drop. */
 function glassOutline(size: GlassSize, open: boolean) {
   const { width: w, height: h } = size
   const pill = h / 2
-  const dropWidth = open ? size.dropWidth : 0
   const dropHeight = open ? size.dropHeight : 0
-  const left = open ? size.dropLeft : size.triggerCenter
-  const right = left + dropWidth
-  const shoulder = Math.min(size.shoulderRadius, dropHeight / 2, dropWidth / 4)
+  // The drop has to leave from the bar's straight bottom edge, between the
+  // pill's rounded ends; outside it the outline would cross itself.
+  const clamp = (value: number) => Math.min(Math.max(value, pill), w - pill)
+  const left = clamp(open ? size.dropLeft : size.triggerCenter)
+  const right = clamp(open ? size.dropLeft + size.dropWidth : left)
+  const dropWidth = right - left
+  const shoulder = Math.max(
+    0,
+    Math.min(
+      size.shoulderRadius,
+      dropHeight / 2,
+      dropWidth / 4,
+      left - pill,
+      w - pill - right,
+    ),
+  )
   const bottom = Math.min(
     size.bottomRadius,
     dropHeight - shoulder,
@@ -76,7 +106,24 @@ export function NavbarGlass({
     const trigger = triggerRef.current
     if (!bar || !trigger) return
 
+    const observer = new ResizeObserver(() => measure())
+    // Base UI writes each new position to the positioner's inline style.
+    const positionObserver = new MutationObserver(() => measure())
+    const observed = new Set<Element>()
+    const observe = (element: HTMLElement | null) => {
+      if (!element || observed.has(element)) return
+      observed.add(element)
+      if (element === positionerRef.current) {
+        positionObserver.observe(element, { attributeFilter: ['style'] })
+      } else {
+        observer.observe(element)
+      }
+    }
+
     const measure = () => {
+      // The popup and positioner mount after the menu opens.
+      observe(popupRef.current)
+      observe(positionerRef.current)
       const barBox = bar.getBoundingClientRect()
       const triggerBox = trigger.getBoundingClientRect()
       const popup = popupRef.current
@@ -97,7 +144,7 @@ export function NavbarGlass({
           triggerBox.left - barBox.left + triggerBox.width / 2
         const dropLeft =
           popup && positioner
-            ? positioner.getBoundingClientRect().left - barBox.left
+            ? targetLeft(positioner) - barBox.left
             : triggerCenter - dropWidth / 2
         const next = {
           width: barBox.width,
@@ -118,15 +165,13 @@ export function NavbarGlass({
       })
     }
 
-    const observer = new ResizeObserver(measure)
-    observer.observe(bar)
-    observer.observe(trigger)
-    const popup = popupRef.current
-    if (popup) observer.observe(popup)
+    observe(bar)
+    observe(trigger)
     const frame = requestAnimationFrame(measure)
     window.addEventListener('resize', measure)
     return () => {
       observer.disconnect()
+      positionObserver.disconnect()
       cancelAnimationFrame(frame)
       window.removeEventListener('resize', measure)
     }
