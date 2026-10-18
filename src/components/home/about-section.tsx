@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import { useEffect, useRef, useState } from 'react'
 
 import content from '@/content.json'
 import { PhotoWall } from '@/components/home/photo-wall'
@@ -7,6 +8,69 @@ import { links } from '@/lib/links'
 import { cn } from '@/lib/utils'
 
 const statColors = ['text-red', 'text-blue', 'text-green', 'text-foreground']
+
+function AnimatedStats({ stats }: { stats: typeof content.about_section.stats }) {
+  const listRef = useRef<HTMLDListElement>(null)
+  const [progress, setProgress] = useState<number | null>(null)
+
+  useEffect(() => {
+    const list = listRef.current
+    if (!list || !('IntersectionObserver' in window)) return
+
+    let frame = 0
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting || entry.intersectionRatio < 0.25) return
+        observer.disconnect()
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+        const start = performance.now()
+        setProgress(0)
+        const tick = (now: number) => {
+          const elapsed = Math.min((now - start) / 1400, 1)
+          setProgress(1 - (1 - elapsed) ** 3)
+          if (elapsed < 1) frame = requestAnimationFrame(tick)
+        }
+        frame = requestAnimationFrame(tick)
+      },
+      { threshold: 0.25 },
+    )
+
+    observer.observe(list)
+    return () => {
+      observer.disconnect()
+      cancelAnimationFrame(frame)
+    }
+  }, [])
+
+  return (
+    <dl ref={listRef} className="grid gap-x-12.5 gap-y-10 sm:grid-cols-2">
+      {stats.map(({ value, label }, index) => (
+        <div
+          key={label}
+          className="flex flex-col-reverse justify-end gap-2.5 border-t-2 border-foreground/15 pt-5"
+        >
+          <dt className="text-lead text-foreground/80">{label}</dt>
+          <dd
+            className={cn(
+              'font-numeric text-stat font-bold tracking-tight',
+              statColors[index],
+            )}
+          >
+            <span aria-hidden="true">
+              {progress === null || progress === 1
+                ? value
+                : Math.round(
+                    Number(value.replaceAll(',', '')) * progress,
+                  ).toLocaleString('en-US')}
+            </span>
+            <span className="sr-only">{value}</span>
+          </dd>
+        </div>
+      ))}
+    </dl>
+  )
+}
 
 /**
  * 甚麼是 SITCON ? — the first thing people arriving from sitcon.org see, so
@@ -37,24 +101,7 @@ export function AboutSection() {
           </div>
           {/* The numbers back the headline, so they sit right under it
               instead of under a heading of their own. */}
-          <dl className="grid gap-x-12.5 gap-y-10 sm:grid-cols-2">
-            {about.stats.map(({ value, label }, index) => (
-              <div
-                key={label}
-                className="flex flex-col-reverse justify-end gap-2.5 border-t-2 border-foreground/15 pt-5"
-              >
-                <dt className="text-lead text-foreground/80">{label}</dt>
-                <dd
-                  className={cn(
-                    'font-numeric text-stat font-bold tracking-tight',
-                    statColors[index],
-                  )}
-                >
-                  {value}
-                </dd>
-              </div>
-            ))}
-          </dl>
+          <AnimatedStats stats={about.stats} />
         </div>
       </div>
 
