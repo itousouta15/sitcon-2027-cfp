@@ -9,7 +9,11 @@ import { cn } from '@/lib/utils'
 
 const statColors = ['text-red', 'text-blue', 'text-green', 'text-foreground']
 
-function AnimatedStats({ stats }: { stats: typeof content.about_section.stats }) {
+function AnimatedStats({
+  stats,
+}: {
+  stats: typeof content.about_section.stats
+}) {
   const listRef = useRef<HTMLDListElement>(null)
   const [progress, setProgress] = useState<number | null>(null)
 
@@ -22,7 +26,8 @@ function AnimatedStats({ stats }: { stats: typeof content.about_section.stats })
       ([entry]) => {
         if (!entry?.isIntersecting || entry.intersectionRatio < 0.25) return
         observer.disconnect()
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+          return
 
         const start = performance.now()
         setProgress(0)

@@ -32,7 +32,11 @@ function glassOutline(size: GlassSize, open: boolean) {
   const left = open ? size.dropLeft : size.triggerCenter
   const right = left + dropWidth
   const shoulder = Math.min(size.shoulderRadius, dropHeight / 2, dropWidth / 4)
-  const bottom = Math.min(size.bottomRadius, dropHeight - shoulder, dropWidth / 2)
+  const bottom = Math.min(
+    size.bottomRadius,
+    dropHeight - shoulder,
+    dropWidth / 2,
+  )
 
   const outline = [
     `M ${pill} 0`,
