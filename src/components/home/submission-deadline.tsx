@@ -96,11 +96,17 @@ function CalendarMenu() {
   const labels = content.submission_deadline
   return (
     <Menu>
-      <MenuTrigger className={buttonVariants({ variant: 'muted', size: 'lg' })}>
+      <MenuTrigger
+        className={buttonVariants({
+          variant: 'muted',
+          size: 'lg',
+          className: 'data-popup-open:brightness-90',
+        })}
+      >
         {labels.addCalendar}
         <ChevronDown
           aria-hidden
-          className="size-6 transition-transform duration-200 in-data-popup-open:rotate-180"
+          className="size-6 transition-transform duration-200 in-data-popup-open:rotate-180 motion-reduce:transition-none"
         />
       </MenuTrigger>
       <MenuContent>
